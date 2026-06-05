@@ -84,14 +84,13 @@ def run_inference(model, data_path: str, output_path: str, schema_path: str):
     if "ID" not in df.columns:
         raise ValueError("Input dataset must contain an 'ID' column.")
 
-    forbidden_cols = [col for col in ["target", "prediction"] if col in df.columns]
+    forbidden_cols = [col for col in ["Status", "target", "prediction"] if col in df.columns]
     if forbidden_cols:
         raise ValueError(
-            "Input dataset must not contain 'target' or 'prediction' columns. "
+            "Input dataset must not contain target or prediction columns. "
             f"Found forbidden columns: {forbidden_cols}"
         )
 
-<<<<<<< HEAD
     feature_cols = load_schema_features(schema_path)
     missing_cols = [col for col in feature_cols if col not in df.columns]
     if missing_cols:
@@ -102,21 +101,12 @@ def run_inference(model, data_path: str, output_path: str, schema_path: str):
 
     X = df[feature_cols]
     preds = model.predict(X)
-=======
-    ids = df["ID"]
-    features = df.drop(columns=["ID"])
-    preds = model.predict(features)
->>>>>>> 5159ba6 (modified inference.py)
 
     output_dir = os.path.dirname(output_path)
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
 
-<<<<<<< HEAD
     pd.DataFrame({"ID": df["ID"], "target": preds}).to_csv(output_path, index=False)
-=======
-    pd.DataFrame({"ID": ids, "target": preds}).to_csv(output_path, index=False)
->>>>>>> 5159ba6 (modified inference.py)
 
 
 def main():
