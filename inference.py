@@ -81,6 +81,9 @@ def run_inference(model, data_path: str, output_path: str, schema_path: str):
 
     df = pd.read_csv(data_path)
 
+    if "ID" not in df.columns:
+        raise ValueError("Input dataset must contain an 'ID' column.")
+
     forbidden_cols = [col for col in ["target", "prediction"] if col in df.columns]
     if forbidden_cols:
         raise ValueError(
@@ -99,11 +102,11 @@ def run_inference(model, data_path: str, output_path: str, schema_path: str):
     X = df[feature_cols]
     preds = model.predict(X)
 
-    output_df = pd.DataFrame({"target": preds})
-    if "id" in df.columns:
-        output_df.insert(0, "id", df["id"])
+    output_dir = os.path.dirname(output_path)
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
 
-    pd.DataFrame(output_df).to_csv(output_path, index=False)
+    pd.DataFrame({"ID": df["ID"], "target": preds}).to_csv(output_path, index=False)
 
 
 def main():
@@ -120,4 +123,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
